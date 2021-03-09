@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-// import apiKey from './apiKey';
 
 class App extends Component {
   constructor() {
@@ -15,8 +14,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // 47都道府県の一覧を取得
-    // API Doc: https://opendata.resas-portal.go.jp/docs/api/v1/prefectures.html
+    // 都道府県一覧API: https://opendata.resas-portal.go.jp/docs/api/v1/prefectures.html
     fetch('https://opendata.resas-portal.go.jp/api/v1/prefectures', {
       headers: { 'X-API-KEY': '6euBMEmjVCfP3tyHLESG1wVt2WugeW7Qac6VRCoD' }
     })
@@ -28,12 +26,12 @@ class App extends Component {
 
   _changeSelection(index) {
     const selected_copy = this.state.selected.slice();
-    // selectedの真偽値を反転
+    // 真偽値を反転
     selected_copy[index] = !selected_copy[index];
 
     if (!this.state.selected[index]) {
       // チェックされていなかった場合はデータを取得
-      // 人口構成API Doc: https://opendata.resas-portal.go.jp/docs/api/v1/population/composition/perYear.html
+      // 人口構成API: https://opendata.resas-portal.go.jp/docs/api/v1/population/composition/perYear.html
       fetch(
         `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?cityCode=-&prefCode=${index +
           1}`,
@@ -44,6 +42,7 @@ class App extends Component {
         .then(response => response.json())
         .then(res => {
           let tmp = [];
+          // lavel:総人口
           Object.keys(res.result.data[0].data).forEach(i => {
             tmp.push(res.result.data[0].data[i].value);
           });
