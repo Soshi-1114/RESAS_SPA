@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-// import apiKey from './apiKey';
+import MediaQuery from "react-responsive";
 
 class App extends Component {
   constructor() {
@@ -15,8 +15,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // 47都道府県の一覧を取得
-    // API Doc: https://opendata.resas-portal.go.jp/docs/api/v1/prefectures.html
+    // 都道府県一覧API: https://opendata.resas-portal.go.jp/docs/api/v1/prefectures.html
     fetch('https://opendata.resas-portal.go.jp/api/v1/prefectures', {
       headers: { 'X-API-KEY': '6euBMEmjVCfP3tyHLESG1wVt2WugeW7Qac6VRCoD' }
     })
@@ -28,12 +27,12 @@ class App extends Component {
 
   _changeSelection(index) {
     const selected_copy = this.state.selected.slice();
-    // selectedの真偽値を反転
+    // 真偽値を反転
     selected_copy[index] = !selected_copy[index];
 
     if (!this.state.selected[index]) {
       // チェックされていなかった場合はデータを取得
-      // 人口構成API Doc: https://opendata.resas-portal.go.jp/docs/api/v1/population/composition/perYear.html
+      // 人口構成API: https://opendata.resas-portal.go.jp/docs/api/v1/population/composition/perYear.html
       fetch(
         `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?cityCode=-&prefCode=${index +
           1}`,
@@ -44,6 +43,7 @@ class App extends Component {
         .then(response => response.json())
         .then(res => {
           let tmp = [];
+          // lavel:総人口
           Object.keys(res.result.data[0].data).forEach(i => {
             tmp.push(res.result.data[0].data[i].value);
           });
@@ -91,8 +91,23 @@ class App extends Component {
     const obj = this.state.prefectures;
     const options = {
       title: {
-        text: '選択した都道府県の人口構成'
+        text: '選択した都道府県の人口推移'
       },
+      yAxis: {
+        title: {
+            text: '総人口（人）'
+        }
+      },
+      xAxis: {
+        title: {
+          text: '年度（年）'
+      }
+      },
+      legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
       plotOptions: {
         series: {
           label: {
@@ -102,22 +117,76 @@ class App extends Component {
           pointStart: 1965,
         }
       },
+      responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    },
       series: this.state.series
     };
 
+    const titleStyle1 = {
+      color: '#333333',
+      padding: '0.5em 0',
+      borderTop: 'solid 3px #DDDDDD',
+      borderBottom: 'solid 3px #DDDDDD',
+      textAlign: 'center',
+      fontSize: '40pt',
+    }
+
+    const titleStyle2 = {
+      color: '#333333',
+      padding: '0.5em 0',
+      borderTop: 'solid 3px #DDDDDD',
+      borderBottom: 'solid 3px #DDDDDD',
+      textAlign: 'center',
+      fontSize: '6pt',
+
+    }
+
+    const prefStyle = {
+      textAlign: 'center',
+    }
+
+    const horizontalLines = {
+      borderTop: '3px double #8c8b8b',
+    }
+
     return (
       <div>
-        <h1>都道府県別　総人口推移グラフ</h1>
-        {/* <p>
-          <a href="https://github.com/highcharts/highcharts-react">
-            Highcharts React
-          </a>
-        </p>
-        <p>
-          <a href="https://opendata.resas-portal.go.jp/">RESAS API</a>
-        </p> */}
-        {Object.keys(obj).map(i => this.renderItem(obj[i]))}
-        <HighchartsReact highcharts={Highcharts} options={options} />
+        <MediaQuery query="(max-width: 767px)">
+          <div style={titleStyle2}>
+            <h1>都道府県別 総人口推移グラフ</h1>
+          </div>
+          <div style={prefStyle}>
+            {Object.keys(obj).map(i => this.renderItem(obj[i]))}
+          </div>
+          <hr style={horizontalLines}></hr>
+          <div>
+            <HighchartsReact highcharts={Highcharts} options={options} />
+          </div>
+        </MediaQuery>
+        <MediaQuery query="(min-width: 768px)">
+          <div>
+            <h1 style={titleStyle1}>都道府県別　総人口推移グラフ</h1>
+          </div>
+          <div style={prefStyle}>
+            {Object.keys(obj).map(i => this.renderItem(obj[i]))}
+          </div>
+          <hr style={horizontalLines}></hr>
+          <div>
+            <HighchartsReact highcharts={Highcharts} options={options} />
+          </div>
+        </MediaQuery>
       </div>
     );
   }
