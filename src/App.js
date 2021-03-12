@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import MediaQuery from "react-responsive";
+import MediaQuery from 'react-responsive';
 
 class App extends Component {
   constructor() {
