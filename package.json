@@ -20,7 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src"
+    "lint": "eslint src/App.js src/reportWebVitals.js",
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +43,6 @@
   "devDependencies": {
     "eslint": "^7.21.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.22.0"
+    "eslint-plugin-react": "^7.22.0",
   }
 }
